@@ -13,7 +13,8 @@ cp secret.tfvars.sample secret.tfvars
 
 - AWS initial setup (create VPC, subnets, ec2, etc...): ``cd aws_initial_setup``
 - Azure initial setup (create VNet, subnets, VM, etc...) + Azure Cloud Router Connection: ``cd azure_initial_setup_cloud_router_conn``
-- PacketFabric Cloud Router + AWS Cloud Router Connection: ``cd pf_cloud_router_aws_demo``
+- GCP initial setup (create VPC, subnets, VM, etc...) + GCP Cloud Router Connection: ``cd gcp_initial_setup_cloud_router_conn``
+- PacketFabric Cloud Router + AWS Cloud Router Connection: ``cd pf_cloud_router_aws_demo`` (run ``aws_initial_setup`` first)
 - AWS Peering Connections (native AWS): ``cd aws_peering_connections``
 
 3. Create resources 
@@ -22,7 +23,7 @@ terraform init
 terraform apply -auto-approve -var-file="../secret.tfvars"
 ```
 
-4. Cleanup/Remove all in both PacketFabric and AWS.
+4. Cleanup/Remove all
 
 ```sh
 terraform destroy -auto-approve -var-file="../secret.tfvars"

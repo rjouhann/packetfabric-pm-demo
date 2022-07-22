@@ -98,9 +98,6 @@ resource "packetfabric_aws_cloud_router_connection" "crc_1" {
   zone           = var.pf_crc_zone1
   is_public      = var.pf_crc_is_public
   speed          = var.pf_crc_speed
-  depends_on = [
-    cloud_router.cr
-  ]
   lifecycle {
     ignore_changes = [
       circuit_id,
@@ -121,9 +118,6 @@ resource "packetfabric_aws_cloud_router_connection" "crc_2" {
   zone           = var.pf_crc_zone2
   is_public      = var.pf_crc_is_public
   speed          = var.pf_crc_speed
-  depends_on = [
-    cloud_router.cr
-  ]
   lifecycle {
     ignore_changes = [
       circuit_id,
@@ -325,23 +319,13 @@ resource "packetfabric_cloud_router_bgp_prefixes" "crbp_1" {
   provider = packetfabric
   bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_1.id
   prefixes {
-    prefix = var.vpc_cidr1 # or "0.0.0.0/0"
-    type = "in"
+    prefix = var.vpc_cidr2
+    type = "out" # Allowed Prefixes to Cloud
     order = 0
   }
   prefixes {
-    prefix = var.vpc_cidr2 # or "0.0.0.0/0"
-    type = "in"
-    order = 0
-  }
-  prefixes {
-    prefix = var.vpc_cidr1 # or "0.0.0.0/0"
-    type = "out"
-    order = 0
-  }
-  prefixes {
-    prefix = var.vpc_cidr2 # or "0.0.0.0/0"
-    type = "out"
+    prefix = var.vpc_cidr1
+    type = "in" # Allowed Prefixes from Cloud
     order = 0
   }
 }
@@ -362,23 +346,13 @@ resource "packetfabric_cloud_router_bgp_prefixes" "crbp_2" {
   provider = packetfabric
   bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_2.id
   prefixes {
-    prefix = var.vpc_cidr1 # or "0.0.0.0/0"
-    type = "in"
+    prefix = var.vpc_cidr1
+    type = "out" # Allowed Prefixes to Cloud
     order = 0
   }
   prefixes {
-    prefix = var.vpc_cidr2 # or "0.0.0.0/0"
-    type = "in"
-    order = 0
-  }
-  prefixes {
-    prefix = var.vpc_cidr1 # or "0.0.0.0/0"
-    type = "out"
-    order = 0
-  }
-  prefixes {
-    prefix = var.vpc_cidr2 # or "0.0.0.0/0"
-    type = "out"
+    prefix = var.vpc_cidr2
+    type = "in" # Allowed Prefixes from Cloud
     order = 0
   }
 }

@@ -53,16 +53,16 @@ resource "aws_vpc" "vpc_2" {
 
 # Define the public subnets
 resource "aws_subnet" "subnet_1" {
-  vpc_id            = aws_vpc.vpc_1.id
-  cidr_block        = var.subnet_cidr1
+  vpc_id     = aws_vpc.vpc_1.id
+  cidr_block = var.subnet_cidr1
   tags = {
     Name = "${var.tag_name}-${random_pet.name.id}"
   }
 }
 resource "aws_subnet" "subnet_2" {
-  provider          = aws.region2
-  vpc_id            = aws_vpc.vpc_2.id
-  cidr_block        = var.subnet_cidr2
+  provider   = aws.region2
+  vpc_id     = aws_vpc.vpc_2.id
+  cidr_block = var.subnet_cidr2
   tags = {
     Name = "${var.tag_name}-${random_pet.name.id}"
   }
@@ -252,9 +252,9 @@ resource "aws_security_group" "ingress_all_1" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port = -1
-    to_port = -1
-    protocol = "icmp"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   // Terraform removes the default rule
@@ -270,7 +270,7 @@ resource "aws_security_group" "ingress_all_1" {
 }
 resource "aws_security_group" "ingress_all_2" {
   provider = aws.region2
-  name   = "allow-icmp-ssh-http-locust-iperf-sg"
+  name     = "allow-icmp-ssh-http-locust-iperf-sg"
   vpc_id   = aws_vpc.vpc_2.id
   ingress {
     from_port   = 22
@@ -297,9 +297,9 @@ resource "aws_security_group" "ingress_all_2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port = -1
-    to_port = -1
-    protocol = "icmp"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
   }
   // Terraform removes the default rule
@@ -406,34 +406,34 @@ resource "aws_eip" "public_ip_2" {
 
 output "aws_vpn_gateway_1" {
   description = "Virtual Private Gateway ID for Region 1"
-  value = aws_vpn_gateway.vpn_gw_1.id
+  value       = aws_vpn_gateway.vpn_gw_1.id
 }
 
 output "aws_vpn_gateway_2" {
   description = "Virtual Private Gateway ID for Region 2"
-  value = aws_vpn_gateway.vpn_gw_2.id
+  value       = aws_vpn_gateway.vpn_gw_2.id
 }
 
 # Private IPs of the demo Ubuntu instances
 output "ec2_private_ip_1" {
   description = "Private ip address for EC2 instance for Region 1"
-  value = aws_instance.ec2_instance_1.private_ip
+  value       = aws_instance.ec2_instance_1.private_ip
 }
 
 output "ec2_private_ip_2" {
   description = "Private ip address for EC2 instance for Region 2"
-  value = aws_instance.ec2_instance_2.private_ip
+  value       = aws_instance.ec2_instance_2.private_ip
 }
 
 # Public IPs of the demo Ubuntu instances
 output "ec2_public_ip_1" {
   description = "Elastic ip address for EC2 instance for Region 1"
-  value = aws_eip.public_ip_1.public_ip
+  value       = aws_eip.public_ip_1.public_ip
 }
 
 output "ec2_public_ip_2" {
   description = "Elastic ip address for EC2 instance for Region 2"
-  value = aws_eip.public_ip_2.public_ip
+  value       = aws_eip.public_ip_2.public_ip
 }
 
 

@@ -131,7 +131,7 @@ resource "aws_cloud_router_connection" "crc_2" {
 # Wait 30s for the connection to show up in AWS
 resource "null_resource" "previous" {}
 resource "time_sleep" "wait_30_seconds" {
-  depends_on = [null_resource.previous]
+  depends_on      = [null_resource.previous]
   create_duration = "30s"
 }
 # This resource will create (at least) 30 seconds after null_resource.previous
@@ -219,29 +219,29 @@ data "aws_cloud_router_connection" "current" {
 }
 locals {
   aws_cloud_connections = data.aws_cloud_router_connection.current.aws_cloud_connections[*]
-  helper_map = {for val in local.aws_cloud_connections:
-              val["description"]=>val}
+  helper_map = { for val in local.aws_cloud_connections :
+  val["description"] => val }
   cc1 = local.helper_map["${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"]
   cc2 = local.helper_map["${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop2}"]
 }
 output "cc1_vlan_id_pf" {
-    value = one(local.cc1.cloud_settings[*].vlan_id_pf)
+  value = one(local.cc1.cloud_settings[*].vlan_id_pf)
 }
 output "cc2_vlan_id_pf" {
-    value = one(local.cc2.cloud_settings[*].vlan_id_pf)
+  value = one(local.cc2.cloud_settings[*].vlan_id_pf)
 }
 output "aws_cloud_router_connection" {
   value = data.aws_cloud_router_connection.current.aws_cloud_connections[*]
 }
 resource "aws_dx_private_virtual_interface" "direct_connect_vip_1" { # or aws_dx_transit_virtual_interface
-  provider       = aws
-  connection_id  = data.aws_dx_connection.current_1.id
+  provider      = aws
+  connection_id = data.aws_dx_connection.current_1.id
   # Allows connections to multiple VPCs and Regions
-  dx_gateway_id  = aws_dx_gateway.direct_connect_gw_1.id 
+  dx_gateway_id = aws_dx_gateway.direct_connect_gw_1.id
   # Allows connections to a single VPC in the same Region
   # vpn_gateway_id = var.aws_virtual_private_gateway1 
-  name           = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
-  vlan           = one(local.cc1.cloud_settings[*].vlan_id_pf)
+  name = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
+  vlan = one(local.cc1.cloud_settings[*].vlan_id_pf)
   #vlan           = "${flatten(data.aws_cloud_router_connection.current_1.aws_cloud_connections[*].cloud_settings[*].vlan_id_pf)[0]}"
   address_family = "ipv4"
   bgp_asn        = var.pf_cr_asn
@@ -251,14 +251,14 @@ resource "aws_dx_private_virtual_interface" "direct_connect_vip_1" { # or aws_dx
   ]
 }
 resource "aws_dx_private_virtual_interface" "direct_connect_vip_2" { # or aws_dx_transit_virtual_interface
-  provider       = aws.region2
-  connection_id  = data.aws_dx_connection.current_2.id
+  provider      = aws.region2
+  connection_id = data.aws_dx_connection.current_2.id
   # Allows connections to multiple VPCs and Regions
-  dx_gateway_id  = aws_dx_gateway.direct_connect_gw_2.id
+  dx_gateway_id = aws_dx_gateway.direct_connect_gw_2.id
   # Allows connections to a single VPC in the same Region
   # vpn_gateway_id = var.aws_virtual_private_gateway2
-  name           = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop2}"
-  vlan           = one(local.cc2.cloud_settings[*].vlan_id_pf)
+  name = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop2}"
+  vlan = one(local.cc2.cloud_settings[*].vlan_id_pf)
   #vlan           = "${flatten(data.aws_cloud_router_connection.current_2.aws_cloud_connections[*].cloud_settings[*].vlan_id_pf)[0]}"
   address_family = "ipv4"
   bgp_asn        = var.pf_cr_asn
@@ -270,7 +270,7 @@ resource "aws_dx_private_virtual_interface" "direct_connect_vip_2" { # or aws_dx
 
 # From the AWS side: Associate Virtual Private GW  or Transit GW to Direct Connect GW
 resource "aws_dx_gateway_association" "virtual_private_gw_to_direct_connect_1" { # or transit_gw_to_direct_connect_1
-  provider       = aws.region1
+  provider              = aws.region1
   dx_gateway_id         = aws_dx_gateway.direct_connect_gw_1.id
   associated_gateway_id = var.aws_virtual_private_gateway1 # or var.aws_transit_gateway1
   allowed_prefixes = [
@@ -286,7 +286,7 @@ resource "aws_dx_gateway_association" "virtual_private_gw_to_direct_connect_1" {
   }
 }
 resource "aws_dx_gateway_association" "virtual_private_gw_to_direct_connect_2" { # or transit_gw_to_direct_connect_2
-  provider       = aws.region2
+  provider              = aws.region2
   dx_gateway_id         = aws_dx_gateway.direct_connect_gw_2.id
   associated_gateway_id = var.aws_virtual_private_gateway2 # or var.aws_transit_gateway2
   allowed_prefixes = [
@@ -311,22 +311,22 @@ resource "cloud_router_bgp_session" "crbs_1" {
   multihop_ttl   = var.pf_crbs_mhttl
   remote_asn     = var.amazon_side_asn1
   orlonger       = var.pf_crbs_orlonger
-  remote_address = aws_dx_private_virtual_interface.direct_connect_vip_1.amazon_address # AWS side
+  remote_address = aws_dx_private_virtual_interface.direct_connect_vip_1.amazon_address   # AWS side
   l3_address     = aws_dx_private_virtual_interface.direct_connect_vip_1.customer_address # PF side
   md5            = aws_dx_private_virtual_interface.direct_connect_vip_1.bgp_auth_key
 }
 resource "cloud_router_bgp_prefixes" "crbp_1" {
-  provider = packetfabric
+  provider          = packetfabric
   bgp_settings_uuid = cloud_router_bgp_session.crbs_1.id
   prefixes {
     prefix = var.vpc_cidr2
-    type = "in" # other Cloud Router connections are advertising
-    order = 0
+    type   = "out" # Allowed Prefixes to Cloud
+    order  = 0
   }
   prefixes {
     prefix = var.vpc_cidr1
-    type = "out" # want to advertise to other Cloud Router connections
-    order = 0
+    type   = "in" # Allowed Prefixes from Cloud
+    order  = 0
   }
 }
 
@@ -338,21 +338,21 @@ resource "cloud_router_bgp_session" "crbs_2" {
   multihop_ttl   = var.pf_crbs_mhttl
   remote_asn     = var.amazon_side_asn2
   orlonger       = var.pf_crbs_orlonger
-  remote_address = aws_dx_private_virtual_interface.direct_connect_vip_2.amazon_address # AWS side
+  remote_address = aws_dx_private_virtual_interface.direct_connect_vip_2.amazon_address   # AWS side
   l3_address     = aws_dx_private_virtual_interface.direct_connect_vip_2.customer_address # PF side
   md5            = aws_dx_private_virtual_interface.direct_connect_vip_2.bgp_auth_key
 }
 resource "cloud_router_bgp_prefixes" "crbp_2" {
-  provider = packetfabric
+  provider          = packetfabric
   bgp_settings_uuid = cloud_router_bgp_session.crbs_2.id
   prefixes {
     prefix = var.vpc_cidr1
-    type = "in"
-    order = 0
+    type   = "out" # Allowed Prefixes to Cloud
+    order  = 0
   }
   prefixes {
     prefix = var.vpc_cidr2
-    type = "out"
-    order = 0
+    type   = "in" # Allowed Prefixes from Cloud
+    order  = 0
   }
 }

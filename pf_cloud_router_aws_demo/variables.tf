@@ -152,34 +152,34 @@ variable "vpc_cidr2" {
 
 # PacketFabric Interface Parameter configuration:
 variable "pf_cs_interface_media" {
-  type = string
+  type    = string
   default = "LX"
 }
 variable "pf_cs_interface_avzone" {
-  type = string
+  type    = string
   default = "A"
 }
 variable "pf_cs_interface_pop" {
-  type = string
+  type    = string
   default = "PDX1"
 }
 variable "pf_cs_interface_subterm" {
-  type = number
+  type    = number
   default = 1
 }
 variable "pf_cs_interface_srvclass" {
-  type = string
+  type    = string
   default = "metro"
 }
 variable "pf_cs_interface_autoneg" {
-  type = bool
+  type    = bool
   default = false
 }
 variable "pf_cs_interface_speed" {
-  type = string
+  type    = string
   default = "1Gbps"
 }
 variable "pf_cs_interface_nni" {
-  type = bool
+  type    = bool
   default = false
 }

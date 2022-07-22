@@ -35,18 +35,18 @@ provider "aws" {
 resource "random_pet" "name" {}
 
 data "aws_vpc" "vcp_current_1" {
-  cidr_block   = var.vpc_cidr1
+  cidr_block = var.vpc_cidr1
 }
 
 data "aws_vpc" "vcp_current_2" {
-  provider = aws.region2
-  cidr_block   = var.vpc_cidr2
+  provider   = aws.region2
+  cidr_block = var.vpc_cidr2
 }
 
 resource "aws_vpc_peering_connection" "main" {
-  vpc_id        = data.aws_vpc.vcp_current_1.id
-  peer_vpc_id   = data.aws_vpc.vcp_current_2.id
-  peer_region   = var.aws_region2
+  vpc_id      = data.aws_vpc.vcp_current_1.id
+  peer_vpc_id = data.aws_vpc.vcp_current_2.id
+  peer_region = var.aws_region2
 
   tags = {
     Name = "${var.tag_name}-${random_pet.name.id}"
@@ -64,7 +64,7 @@ resource "aws_vpc_peering_connection_accepter" "peer" {
 }
 
 data "aws_route_table" "route_table_current_1" {
-  vpc_id        = data.aws_vpc.vcp_current_1.id
+  vpc_id = data.aws_vpc.vcp_current_1.id
   filter {
     name   = "association.main"
     values = ["false"]
@@ -87,7 +87,7 @@ resource "aws_route" "route_table_1" {
 }
 
 resource "aws_route" "route_table_2" {
-  provider = aws.region2
+  provider                  = aws.region2
   route_table_id            = data.aws_route_table.route_table_current_2.id
   destination_cidr_block    = var.vpc_cidr1
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peer.id
