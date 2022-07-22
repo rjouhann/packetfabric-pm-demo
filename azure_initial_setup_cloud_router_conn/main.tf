@@ -234,7 +234,7 @@ data "azurerm_public_ip" "public_ip_vm_1" {
 }
 
 output "public_ip_vm_1" {
-  description = "Public ip address for VM for Region 1"
+  description = "Public ip address for VM for Region 1 (ssh user: ubuntu)"
   value       = data.azurerm_public_ip.public_ip_vm_1.ip_address
 }
 
