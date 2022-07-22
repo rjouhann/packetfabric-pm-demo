@@ -98,9 +98,6 @@ resource "aws_cloud_router_connection" "crc_1" {
   zone           = var.pf_crc_zone1
   is_public      = var.pf_crc_is_public
   speed          = var.pf_crc_speed
-  depends_on = [
-    cloud_router.cr
-  ]
   lifecycle {
     ignore_changes = [
       circuit_id,
@@ -121,9 +118,6 @@ resource "aws_cloud_router_connection" "crc_2" {
   zone           = var.pf_crc_zone2
   is_public      = var.pf_crc_is_public
   speed          = var.pf_crc_speed
-  depends_on = [
-    cloud_router.cr
-  ]
   lifecycle {
     ignore_changes = [
       circuit_id,
@@ -164,16 +158,10 @@ data "aws_dx_connection" "current_2" {
 resource "aws_dx_connection_confirmation" "confirmation_1" {
   provider      = aws
   connection_id = data.aws_dx_connection.current_1.id
-  depends_on = [
-    data.aws_dx_connection.current_1
-  ]
 }
 resource "aws_dx_connection_confirmation" "confirmation_2" {
   provider      = aws.region2
   connection_id = data.aws_dx_connection.current_2.id
-  depends_on = [
-    data.aws_dx_connection.current_2
-  ]
 }
 
 # From the AWS side: Create a gateway
@@ -290,8 +278,7 @@ resource "aws_dx_gateway_association" "virtual_private_gw_to_direct_connect_1" {
     var.vpc_cidr2
   ]
   depends_on = [
-    aws_dx_private_virtual_interface.direct_connect_vip_1,
-    aws_dx_gateway.direct_connect_gw_1
+    aws_dx_private_virtual_interface.direct_connect_vip_1
   ]
   timeouts {
     create = "1h"
@@ -307,8 +294,7 @@ resource "aws_dx_gateway_association" "virtual_private_gw_to_direct_connect_2" {
     var.vpc_cidr2
   ]
   depends_on = [
-    aws_dx_private_virtual_interface.direct_connect_vip_2,
-    aws_dx_gateway.direct_connect_gw_2
+    aws_dx_private_virtual_interface.direct_connect_vip_2
   ]
   timeouts {
     create = "1h"
@@ -328,9 +314,6 @@ resource "cloud_router_bgp_session" "crbs_1" {
   remote_address = aws_dx_private_virtual_interface.direct_connect_vip_1.amazon_address # AWS side
   l3_address     = aws_dx_private_virtual_interface.direct_connect_vip_1.customer_address # PF side
   md5            = aws_dx_private_virtual_interface.direct_connect_vip_1.bgp_auth_key
-  depends_on = [
-    aws_dx_private_virtual_interface.direct_connect_vip_1
-  ]
 }
 resource "cloud_router_bgp_prefixes" "crbp_1" {
   provider = packetfabric
@@ -345,9 +328,6 @@ resource "cloud_router_bgp_prefixes" "crbp_1" {
     type = "out" # want to advertise to other Cloud Router connections
     order = 0
   }
-  depends_on = [
-    cloud_router_bgp_session.crbs_1
-  ]
 }
 
 resource "cloud_router_bgp_session" "crbs_2" {
@@ -361,9 +341,6 @@ resource "cloud_router_bgp_session" "crbs_2" {
   remote_address = aws_dx_private_virtual_interface.direct_connect_vip_2.amazon_address # AWS side
   l3_address     = aws_dx_private_virtual_interface.direct_connect_vip_2.customer_address # PF side
   md5            = aws_dx_private_virtual_interface.direct_connect_vip_2.bgp_auth_key
-  depends_on = [
-    aws_dx_private_virtual_interface.direct_connect_vip_2
-  ]
 }
 resource "cloud_router_bgp_prefixes" "crbp_2" {
   provider = packetfabric
@@ -378,7 +355,4 @@ resource "cloud_router_bgp_prefixes" "crbp_2" {
     type = "out"
     order = 0
   }
-  depends_on = [
-    cloud_router_bgp_session.crbs_2
-  ]
 }

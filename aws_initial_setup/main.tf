@@ -149,9 +149,6 @@ resource "aws_vpn_gateway_attachment" "vpn_attachment_1" {
   provider       = aws
   vpc_id         = aws_vpc.vpc_1.id
   vpn_gateway_id = aws_vpn_gateway.vpn_gw_1.id
-  depends_on = [
-    aws_vpn_gateway.vpn_gw_1
-  ]
 }
 resource "aws_vpn_gateway" "vpn_gw_2" {
   provider        = aws.region2
@@ -167,9 +164,6 @@ resource "aws_vpn_gateway_attachment" "vpn_attachment_2" {
   provider       = aws.region2
   vpc_id         = aws_vpc.vpc_2.id
   vpn_gateway_id = aws_vpn_gateway.vpn_gw_2.id
-  depends_on = [
-    aws_vpn_gateway.vpn_gw_2
-  ]
 }
 
 # Define the route tables

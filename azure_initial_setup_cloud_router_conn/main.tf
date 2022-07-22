@@ -148,10 +148,6 @@ resource "azurerm_network_interface" "nic_1" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.public_ip_vm_1.id
   }
-  depends_on = [
-    azurerm_public_ip.public_ip_vm_1,
-    azurerm_subnet.subnet_1
-  ]
   tags = {
     environment = "${var.tag_name}-${random_pet.name.id}"
   }
@@ -192,9 +188,9 @@ resource "azurerm_virtual_machine" "vm_1" {
     managed_disk_type = "Standard_LRS"
   }
   os_profile {
-    computer_name = "${var.tag_name}-${random_pet.name.id}-azure"
+    computer_name  = "${var.tag_name}-${random_pet.name.id}-azure"
     admin_username = "ubuntu"
-    custom_data = file("../user-data-ubuntu.sh")
+    custom_data    = file("../user-data-ubuntu.sh")
   }
   os_profile_linux_config {
     disable_password_authentication = true
@@ -206,10 +202,6 @@ resource "azurerm_virtual_machine" "vm_1" {
   tags = {
     environment = "${var.tag_name}-${random_pet.name.id}"
   }
-  depends_on = [
-    azurerm_network_interface.nic_1,
-    azurerm_resource_group.resource_group_1
-  ]
 }
 
 data "azurerm_network_interface" "nic_1" {
@@ -281,9 +273,6 @@ output "service_key1" {
 #   secondary_peer_address_prefix = "169.254.248.40/30"
 #   vlan_id                       = 11
 #   shared_key                    = "dd02c7c2232759874e1c20558" # echo "secret" | md5sum | cut -c1-25
-#   depends_on = [
-#     azurerm_express_route_circuit.azure_express_route_1
-#   ]
 # }
 
 # => ADD PacketFabric Cloud Router BGP Setting Creation here x2 (for both Primary and Secondary Azure Connections)
@@ -316,10 +305,6 @@ output "service_key1" {
 #     private_ip_address_allocation = "Dynamic"
 #     subnet_id                     = azurerm_subnet.subnet_gw.id
 #   }
-#   depends_on = [
-#     azurerm_public_ip.public_ip_vng_1,
-#     azurerm_subnet.subnet_gw
-#   ]
 #   tags = {
 #     environment = "${var.tag_name}-${random_pet.name.id}"
 #   }
@@ -334,10 +319,6 @@ output "service_key1" {
 #   express_route_circuit_id   = azurerm_express_route_circuit.azure_express_route_1.id
 #   virtual_network_gateway_id = azurerm_virtual_network_gateway.vng_1.id
 #   routing_weight             = 0
-#   depends_on = [
-#     azurerm_express_route_circuit.azure_express_route_1,
-#     azurerm_virtual_network_gateway.vng_1
-#   ]
 #   tags = {
 #     environment = "${var.tag_name}-${random_pet.name.id}"
 #   }
