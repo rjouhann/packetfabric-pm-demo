@@ -137,31 +137,6 @@ resource "azurerm_public_ip" "public_ip_vm_1" {
   }
 }
 
-# Wait 30s for the public IP to get assign to retreive its value
-resource "null_resource" "previous" {}
-resource "time_sleep" "wait_30_seconds" {
-  depends_on      = [null_resource.previous]
-  create_duration = "30s"
-}
-# This resource will create (at least) 30 seconds after null_resource.previous
-resource "null_resource" "next" {
-  depends_on = [time_sleep.wait_30_seconds]
-}
-
-data "azurerm_public_ip" "public_ip_vm_1" {
-  name                = "${var.tag_name}-${random_pet.name.id}-public-ip-vm1"
-  resource_group_name = azurerm_resource_group.resource_group_1.name
-  depends_on = [
-    azurerm_public_ip.public_ip_vm_1,
-    null_resource.next
-  ]
-}
-
-output "public_ip_vm_1" {
-  description = "Public ip address for VM for Region 1"
-  value       = data.azurerm_public_ip.public_ip_vm_1.ip_address
-}
-
 resource "azurerm_network_interface" "nic_1" {
   name                = "${var.tag_name}-${random_pet.name.id}-nic1"
   location            = azurerm_resource_group.resource_group_1.location
@@ -204,7 +179,6 @@ resource "azurerm_virtual_machine" "vm_1" {
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
-  user_data = file("../user-data-ubuntu.sh")
   storage_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-focal"
@@ -218,14 +192,16 @@ resource "azurerm_virtual_machine" "vm_1" {
     managed_disk_type = "Standard_LRS"
   }
   os_profile {
-    computer_name  = "${var.tag_name}-${random_pet.name.id}-azure"
-    admin_username = var.admin_username
-    admin_password = var.admin_password
-    custom_data    = file("../user-data-ubuntu.sh")
+    computer_name = "${var.tag_name}-${random_pet.name.id}-azure"
+    admin_username = "ubuntu"
+    custom_data = file("../user-data-ubuntu.sh")
   }
   os_profile_linux_config {
     disable_password_authentication = true
-    ssh_keys                        = [azurerm_ssh_public_key.ssh_public_key.public_key]
+    ssh_keys {
+      key_data = azurerm_ssh_public_key.ssh_public_key.public_key
+      path     = "/home/ubuntu/.ssh/authorized_keys"
+    }
   }
   tags = {
     environment = "${var.tag_name}-${random_pet.name.id}"
@@ -246,6 +222,19 @@ data "azurerm_network_interface" "nic_1" {
 output "private_ip_vm_1" {
   description = "Private ip address for VM for Region 1"
   value       = data.azurerm_network_interface.nic_1.private_ip_address
+}
+
+data "azurerm_public_ip" "public_ip_vm_1" {
+  name                = "${var.tag_name}-${random_pet.name.id}-public-ip-vm1"
+  resource_group_name = azurerm_resource_group.resource_group_1.name
+  depends_on = [
+    azurerm_virtual_machine.vm_1
+  ]
+}
+
+output "public_ip_vm_1" {
+  description = "Public ip address for VM for Region 1"
+  value       = data.azurerm_public_ip.public_ip_vm_1.ip_address
 }
 
 output "admin_username" {
