@@ -1,8 +1,5 @@
 # terraform-packetfabric-pm-demo
 
-Apply:
+Apply: ``terraform apply -auto-approve -var-file="../secret.tfvars"``
 
-``terraform apply -auto-approve -var-file="../secret.tfvars"``
-
-Destroy:
-``terraform destroy -auto-approve -var-file="../secret.tfvars"``
+Destroy: ``terraform destroy -auto-approve -var-file="../secret.tfvars"``
