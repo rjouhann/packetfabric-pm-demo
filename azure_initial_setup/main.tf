@@ -207,7 +207,8 @@ resource "azurerm_virtual_machine" "vm_1" {
     environment = "${var.tag_name}-${random_pet.name.id}"
   }
   depends_on = [
-    azurerm_network_interface.nic_1
+    azurerm_network_interface.nic_1,
+    azurerm_resource_group.resource_group_1
   ]
 }
 
@@ -235,15 +236,6 @@ data "azurerm_public_ip" "public_ip_vm_1" {
 output "public_ip_vm_1" {
   description = "Public ip address for VM for Region 1"
   value       = data.azurerm_public_ip.public_ip_vm_1.ip_address
-}
-
-output "admin_username" {
-  value     = var.admin_username
-  sensitive = true
-}
-output "admin_password" {
-  value     = var.admin_password
-  sensitive = true
 }
 
 # From the Microsoft side: Create an ExpressRoute circuit in the Azure Console.
