@@ -70,6 +70,7 @@ variable "pf_cr_asn" {
   default  = 4556 # PacketFabric ASN
   nullable = false
 }
+# Parameter deprecated
 variable "pf_cr_scope" {
   type    = string
   default = "private"

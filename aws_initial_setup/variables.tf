@@ -19,10 +19,20 @@ variable "aws_region1" {
   description = "AWS region"
   default     = "us-west-2" # us-west-2, eu-west-2
 }
+variable "aws_region1_zone1" {
+  type        = string
+  description = "AWS Availability Zone"
+  default     = "us-west-2a"
+}
 variable "aws_region2" {
   type        = string
   description = "AWS region"
   default     = "us-east-1"
+}
+variable "aws_region2_zone1" {
+  type        = string
+  description = "AWS Availability Zone"
+  default     = "us-east-1a"
 }
 # VPC Variables
 variable "vpc_cidr1" {

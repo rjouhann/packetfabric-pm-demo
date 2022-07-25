@@ -19,8 +19,6 @@ terraform.tfstate.backup
 *.test
 .DS_Store
 test
-# GCP secret
-*.json
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -34,3 +32,6 @@ terraform.tfstate.d/
 
 # Secret
 secret*.tfvars
+# GCP secret
+secret.json
+*.json
