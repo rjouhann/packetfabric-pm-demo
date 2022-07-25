@@ -177,8 +177,8 @@ resource "azurerm_virtual_machine" "vm_1" {
 
   storage_image_reference {
     publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal"
-    sku       = "20_04-lts"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
     version   = "latest"
   }
   storage_os_disk {
@@ -199,6 +199,9 @@ resource "azurerm_virtual_machine" "vm_1" {
       path     = "/home/ubuntu/.ssh/authorized_keys"
     }
   }
+  depends_on = [
+    azurerm_network_interface.nic_1 # shouldn't be needed but it sounds like Azure TF doesn't track the dependency properly
+  ]
   tags = {
     environment = "${var.tag_name}-${random_pet.name.id}"
   }
