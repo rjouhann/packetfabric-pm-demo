@@ -2,7 +2,7 @@ terraform {
   required_providers {
     packetfabric = {
       source  = "PacketFabric/packetfabric"
-      version = "0.2.0"
+      version = "0.1.0"
     }
     aws = {
       source  = "hashicorp/aws"
@@ -48,27 +48,10 @@ provider "google" {
 # Create random name to use to name objects
 resource "random_pet" "name" {}
 
-# # From the PacketFabric side: Create a PacketFabric interface
-# resource "packetfabric_interface" "port_1" {
-#   provider = packetfabric
-#   account_uuid = var.pf_account_uuid
-#   autoneg = var.pf_cs_interface_autoneg
-#   description = "${var.tag_name}-${random_pet.name.id}"
-#   media = var.pf_cs_interface_media
-#   nni = var.pf_cs_interface_nni
-#   pop = var.pf_cs_interface_pop
-#   speed = var.pf_cs_interface_speed
-#   subscription_term = var.pf_cs_interface_subterm
-#   zone = var.pf_cs_interface_avzone
-# }
-# output "packetfabric_interface" {
-#   value = packetfabric_interface.port_1
-# }
-
 # From the PacketFabric side: Create a cloud router
-resource "packetfabric_cloud_router" "cr" {
+resource "cloud_router" "cr" {
   provider     = packetfabric
-  # scope        = var.pf_cr_scope # Parameter deprecated
+  scope        = var.pf_cr_scope # Parameter deprecated
   asn          = var.pf_cr_asn
   name         = "${var.tag_name}-${random_pet.name.id}"
   account_uuid = var.pf_account_uuid
@@ -76,52 +59,27 @@ resource "packetfabric_cloud_router" "cr" {
   regions      = var.pf_cr_regions
 }
 
-data "packetfabric_cloud_router" "current" {
+data "cloud_router" "current" {
   provider = packetfabric
   depends_on = [
     cloud_router.cr
   ]
 }
-output "packetfabric_cloud_router" {
-  value = data.packetfabric_cloud_router.current
+output "cloud_router" {
+  value = data.cloud_router.current
 }
 
-# From the PacketFabric side: Create a cloud router connection to Dedicated Port
-
-####### not available yet in 0.1.0
-
-
 # From the PacketFabric side: Create a cloud router connection to AWS
-resource "packetfabric_aws_cloud_router_connection" "crc_1" {
+resource "aws_cloud_router_connection" "crc_1" {
   provider       = packetfabric
   circuit_id     = cloud_router.cr.id
   account_uuid   = var.pf_account_uuid
   aws_account_id = var.pf_aws_account_id
-  maybe_nat      = var.pf_crc_maybe_nat
+  maybe_nat      = false
   description    = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
   pop            = var.pf_crc_pop1
   zone           = var.pf_crc_zone1
-  is_public      = var.pf_crc_is_public
-  speed          = var.pf_crc_speed
-  lifecycle {
-    ignore_changes = [
-      circuit_id,
-      description,
-      pop,
-      zone
-    ]
-  }
-}
-resource "packetfabric_aws_cloud_router_connection" "crc_2" {
-  provider       = packetfabric
-  circuit_id     = cloud_router.cr.id
-  account_uuid   = var.pf_account_uuid
-  aws_account_id = var.pf_aws_account_id
-  maybe_nat      = var.pf_crc_maybe_nat
-  description    = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop2}"
-  pop            = var.pf_crc_pop2
-  zone           = var.pf_crc_zone2
-  is_public      = var.pf_crc_is_public
+  is_public      = true
   speed          = var.pf_crc_speed
   lifecycle {
     ignore_changes = [
@@ -133,171 +91,168 @@ resource "packetfabric_aws_cloud_router_connection" "crc_2" {
   }
 }
 
-# Wait 30s for the connection to show up in AWS
+# Wait 60s for the connection to show up in AWS
 resource "null_resource" "previous" {}
-resource "time_sleep" "wait_30_seconds" {
-  depends_on = [null_resource.previous]
-  create_duration = "30s"
+resource "time_sleep" "wait_60_seconds" {
+  depends_on      = [null_resource.previous]
+  create_duration = "60s"
 }
-# This resource will create (at least) 30 seconds after null_resource.previous
+# This resource will create (at least) 60 seconds after null_resource.previous
 resource "null_resource" "next" {
-  depends_on = [time_sleep.wait_30_seconds]
+  depends_on = [time_sleep.wait_60_seconds]
 }
 
-# Retrieve the Direct Connect connection in AWS
+# Retrieve the Direct Connect connections in AWS
 data "aws_dx_connection" "current_1" {
   provider = aws
   name     = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
   depends_on = [
-    null_resource.next
+    null_resource.next,
+    aws_cloud_router_connection.crc_1
   ]
 }
-# From the AWS side: Accept the connection
+output "aws_dx_connection_1" {
+  value = data.aws_dx_connection.current_1
+}
+
 resource "aws_dx_connection_confirmation" "confirmation_1" {
   provider      = aws
   connection_id = data.aws_dx_connection.current_1.id
 }
 
-# From the AWS side: Create a gateway
-resource "aws_dx_gateway" "direct_connect_gw_1" {
-  provider        = aws
-  name            = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
-  amazon_side_asn = var.amazon_side_asn1
-  depends_on = [
-    packetfabric_aws_cloud_router_connection.crc_1
-  ]
-}
-
 # From the AWS side: Create and attach a VIF
-# https://github.com/PacketFabric/terraform-provider-packetfabric/issues/23
-# data "packetfabric_aws_cloud_router_connection" "current_1" {
-#   provider   = packetfabric
-#   circuit_id = packetfabric_aws_cloud_router_connection.crc_1.id
 
-#   depends_on = [
-#     aws_dx_connection_confirmation.confirmation_1
-#   ]
-# }
-# output "packetfabric_aws_cloud_router_connection_1" {
-#   value = data.packetfabric_aws_cloud_router_connection.current_1 #.aws_cloud_connections[*]
-# }
-# data "packetfabric_aws_cloud_router_connection" "current_2" {
-#   provider   = packetfabric
-#   circuit_id = packetfabric_aws_cloud_router_connection.crc_2.id
+### see issue https://github.com/hashicorp/terraform-provider-aws/issues/25989
 
-#   depends_on = [
-#     aws_dx_connection_confirmation.confirmation_2
-#   ]
-# }
-# output "packetfabric_aws_cloud_router_connection_2" {
-#   value = data.packetfabric_aws_cloud_router_connection.current_2 
-# }
-
-# Workaround
-data "packetfabric_aws_cloud_router_connection" "current" {
+############# OPTION 1
+data "aws_cloud_router_connection" "current" {
   provider   = packetfabric
   circuit_id = cloud_router.cr.id
 
   depends_on = [
-    aws_dx_connection_confirmation.confirmation_1,
-    aws_dx_connection_confirmation.confirmation_2,
+    aws_dx_connection_confirmation.confirmation_1
   ]
 }
 locals {
-  aws_cloud_connections = data.packetfabric_aws_cloud_router_connection.current.aws_cloud_connections[*]
-  helper_map = {for val in local.aws_cloud_connections:
-              val["description"]=>val}
+  aws_cloud_connections = data.aws_cloud_router_connection.current.aws_cloud_connections[*]
+  helper_map = { for val in local.aws_cloud_connections :
+  val["description"] => val }
   cc1 = local.helper_map["${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"]
+
+  cc1_vlan_id_pf = one(local.cc1.cloud_settings[*].vlan_id_pf)
+  # Public AWS Router Peer IP
+  cc1_public_ip = "${cidrhost(one(local.cc1.cloud_settings[*].public_ip), 0)}/${element(split("/", "${one(local.cc1.cloud_settings[*].public_ip)}"), 1)}"
+  # PacketFabric Router Peer IP
+  cc1_customer_address = "${cidrhost(one(local.cc1.cloud_settings[*].public_ip), 1)}/${element(split("/", "${one(local.cc1.cloud_settings[*].public_ip)}"), 1)}"
 }
+
 output "cc1_vlan_id_pf" {
-    value = one(local.cc1.cloud_settings[*].vlan_id_pf)
+  value = local.cc1_vlan_id_pf
 }
-output "packetfabric_aws_cloud_router_connection" {
-  value = data.packetfabric_aws_cloud_router_connection.current.aws_cloud_connections[*]
+output "cc1_public_ip" {
+  value = local.cc1_public_ip
 }
-resource "aws_dx_private_virtual_interface" "direct_connect_vip_1" {
-  provider       = aws
-  connection_id  = data.aws_dx_connection.current_1.id
-  dx_gateway_id  = aws_dx_gateway.direct_connect_gw_1.id 
-  name           = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
-  vlan           = one(local.cc1.cloud_settings[*].vlan_id_pf)
-  address_family = "ipv4"
-  bgp_asn        = var.pf_cr_asn
-  depends_on = [
-    #data.packetfabric_aws_cloud_router_connection.current_1
-    data.packetfabric_aws_cloud_router_connection.current
-  ]
+output "cc1_customer_address" {
+  value = local.cc1_customer_address
 }
 
-# From the AWS side: Associate Virtual Private GW  or Transit GW to Direct Connect GW
-resource "aws_dx_gateway_association" "virtual_private_gw_to_direct_connect_1" {
-  provider       = aws.region1
-  dx_gateway_id         = aws_dx_gateway.direct_connect_gw_1.id
-  associated_gateway_id = var.aws_virtual_private_gateway1
-  allowed_prefixes = [
-    var.vpc_cidr1,
-    var.vpc_cidr2
-  ]
-  depends_on = [
-    aws_dx_private_virtual_interface.direct_connect_vip_1
-  ]
-  timeouts {
-    create = "1h"
-    delete = "2h"
-  }
+output "aws_cloud_router_connection" {
+  value = data.aws_cloud_router_connection.current.aws_cloud_connections[*]
 }
 
-# From the PacketFabric side: Configure BGP
-resource "packetfabric_cloud_router_bgp_session" "crbs_1" {
-  provider       = packetfabric
-  circuit_id     = cloud_router.cr.id
-  connection_id  = packetfabric_aws_cloud_router_connection.crc_1.id
-  address_family = var.pf_crbs_af
-  multihop_ttl   = var.pf_crbs_mhttl
-  remote_asn     = var.amazon_side_asn1
-  orlonger       = var.pf_crbs_orlonger
-  remote_address = aws_dx_private_virtual_interface.direct_connect_vip_1.amazon_address # AWS side
-  l3_address     = aws_dx_private_virtual_interface.direct_connect_vip_1.customer_address # PF side
-  md5            = aws_dx_private_virtual_interface.direct_connect_vip_1.bgp_auth_key
-}
-resource "packetfabric_cloud_router_bgp_prefixes" "crbp_1" {
-  provider = packetfabric
-  bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_1.id
-  prefixes {
-    prefix = var.vpc_cidr2
-    type = "out" # Allowed Prefixes to Cloud
-    order = 0
-  }
-  prefixes {
-    prefix = var.vpc_cidr1
-    type = "in" # Allowed Prefixes from Cloud
-    order = 0
-  }
-}
+# resource "aws_dx_public_virtual_interface" "direct_connect_vif_1" {
+#   provider         = aws
+#   name             = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
+#   connection_id    = data.aws_dx_connection.current_1.id
+#   bgp_asn          = var.pf_cr_asn
+#   vlan             = local.cc1_vlan_id_pf
+#   address_family   = "ipv4"
+#   amazon_address   = local.cc1_public_ip # HERE
+#   customer_address = local.cc1_customer_address # HERE
 
-resource "packetfabric_cloud_router_bgp_session" "crbs_2" {
-  provider       = packetfabric
-  circuit_id     = cloud_router.cr.id
-  connection_id  = packetfabric_aws_cloud_router_connection.crc_2.id
-  address_family = var.pf_crbs_af
-  multihop_ttl   = var.pf_crbs_mhttl
-  remote_asn     = var.amazon_side_asn2
-  orlonger       = var.pf_crbs_orlonger
-  remote_address = aws_dx_private_virtual_interface.direct_connect_vip_2.amazon_address # AWS side
-  l3_address     = aws_dx_private_virtual_interface.direct_connect_vip_2.customer_address # PF side
-  md5            = aws_dx_private_virtual_interface.direct_connect_vip_2.bgp_auth_key
-}
-resource "packetfabric_cloud_router_bgp_prefixes" "crbp_2" {
-  provider = packetfabric
-  bgp_settings_uuid = packetfabric_cloud_router_bgp_session.crbs_2.id
-  prefixes {
-    prefix = var.vpc_cidr1
-    type = "out" # Allowed Prefixes to Cloud
-    order = 0
-  }
-  prefixes {
-    prefix = var.vpc_cidr2
-    type = "in" # Allowed Prefixes from Cloud
-    order = 0
-  }
-}
+#   route_filter_prefixes = [
+#     local.cc1_customer_address
+#     # Add any addition public IPs if needed
+#   ]
+#   depends_on = [
+#     aws_dx_connection_confirmation.confirmation_1,
+#     data.aws_cloud_router_connection.current
+#   ]
+#   lifecycle {
+#     ignore_changes = [
+#       vlan
+#     ]
+#   }
+# }
+
+############# OPTION 2
+# module "aws_dx_public_vif" {
+#   source = "./modules/aws_dx_public_vif"
+#   pf_api_server  = var.pf_api_server
+#   pf_api_key = var.pf_api_key
+#   crc_name = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
+#   cloud_router_circuit_id = cloud_router.cr.id
+# }
+
+# output "cc1_vlan_id_pf" {
+#   value = module.aws_dx_public_vif.cc1_vlan_id_pf
+# }
+# output "cc1_public_ip" {
+#   value = module.aws_dx_public_vif.cc1_public_ip
+# }
+# output "cc1_customer_address" {
+#   value = module.aws_dx_public_vif.cc1_customer_address
+# }
+
+# resource "aws_dx_public_virtual_interface" "direct_connect_vif_1" {
+#   provider         = aws
+#   name             = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
+#   connection_id    = data.aws_dx_connection.current_1.id
+#   bgp_asn          = var.pf_cr_asn
+#   vlan             = module.aws_dx_public_vif.cc1_vlan_id_pf
+#   address_family   = "ipv4"
+#   amazon_address   = module.aws_dx_public_vif.cc1_public_ip        # Public AWS Router Peer IP
+#   customer_address = module.aws_dx_public_vif.cc1_customer_address # PacketFabric Router Peer IP
+
+#   route_filter_prefixes = [
+#     "${module.aws_dx_public_vif.cc1_public_ip}"
+#     # Add any addition public IPs if needed
+#   ]
+#   depends_on = [
+#     module.aws_dx_public_vif
+#   ]
+#   lifecycle {
+#     ignore_changes = [
+#       vlan
+#     ]
+#   }
+# }
+#############
+
+# # From the PacketFabric side: Configure BGP
+# resource "cloud_router_bgp_session" "crbs_1" {
+#   provider       = packetfabric
+#   circuit_id     = cloud_router.cr.id
+#   connection_id  = aws_cloud_router_connection.crc_1.id
+#   address_family = var.pf_crbs_af
+#   multihop_ttl   = var.pf_crbs_mhttl
+#   remote_asn     = var.amazon_side_asn1
+#   orlonger       = var.pf_crbs_orlonger
+#   remote_address = aws_dx_public_virtual_interface.direct_connect_vif_1.amazon_address   # AWS side
+#   l3_address     = aws_dx_public_virtual_interface.direct_connect_vif_1.customer_address # PF side
+#   md5            = aws_dx_public_virtual_interface.direct_connect_vif_1.bgp_auth_key
+# }
+# resource "cloud_router_bgp_prefixes" "crbp_1" {
+#   provider          = packetfabric
+#   bgp_settings_uuid = cloud_router_bgp_session.crbs_1.id
+#   # prefixes {
+#   #   prefix = "a.b.c.d/z" # # Add any addition public IPs if needed
+#   #   type   = "out" # Allowed Prefixes to Cloud
+#   #   order  = 0
+#   # }
+#   prefixes {
+#     prefix = aws_dx_public_virtual_interface.direct_connect_vif_1.amazon_address
+#     type   = "in" # Allowed Prefixes from Cloud
+#     order  = 0
+#   }
+# }

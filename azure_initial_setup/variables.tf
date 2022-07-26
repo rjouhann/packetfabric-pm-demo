@@ -1,6 +1,6 @@
 ## General VARs
 variable "tag_name" {
-  default = "DEMO-PF"
+  default = "demo-pf"
 }
 
 ## Azure VARs

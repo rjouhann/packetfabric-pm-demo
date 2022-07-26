@@ -1,6 +1,6 @@
 ## General VARs
 variable "tag_name" {
-  default = "DEMO-PF"
+  default = "demo-pf"
 }
 
 # AWS VARs
@@ -19,10 +19,6 @@ variable "aws_region1" {
   type        = string
   description = "AWS region"
   default     = "us-west-2" # us-west-2, eu-west-2
-}
-variable "aws_virtual_private_gateway1" {
-  type        = string
-  description = "AWS Virtual Private Gateway ID Region 1"
 }
 
 ## PacketFabic VARs
@@ -75,25 +71,9 @@ variable "pf_crc_zone1" {
   type    = string
   default = "a"
 }
-variable "pf_crc_pop2" {
-  type    = string
-  default = "NYC1" # NYC1/c WDC2/e
-}
-variable "pf_crc_zone2" {
-  type    = string
-  default = "c"
-}
 variable "pf_crc_speed" {
   type    = string
-  default = "50Mbps" #  # 1Gbps min for Transit Gateway
-}
-variable "pf_crc_maybe_nat" {
-  type    = bool
-  default = false
-}
-variable "pf_crc_is_public" {
-  type    = bool
-  default = false
+  default = "50Mbps"
 }
 
 # PacketFabric Cloud-Router-BGP-Session Parameter configuration:
@@ -110,53 +90,7 @@ variable "amazon_side_asn1" {
   default  = 64512 # private
   nullable = false
 }
-variable "amazon_side_asn2" {
-  type     = number
-  default  = 64513 # private
-  nullable = false
-}
 variable "pf_crbs_orlonger" {
   type    = bool
   default = true # Allow longer prefixes
-}
-
-# PacketFabric Cloud-Router-BGP-Prefixes Parameter configuration:
-variable "vpc_cidr1" {
-  type        = string
-  description = "CIDR for the VPC"
-  default     = "10.1.0.0/16"
-}
-
-# PacketFabric Interface Parameter configuration:
-variable "pf_cs_interface_media" {
-  type    = string
-  default = "LX"
-}
-variable "pf_cs_interface_avzone" {
-  type    = string
-  default = "A"
-}
-variable "pf_cs_interface_pop" {
-  type    = string
-  default = "PDX1"
-}
-variable "pf_cs_interface_subterm" {
-  type    = number
-  default = 1
-}
-variable "pf_cs_interface_srvclass" {
-  type    = string
-  default = "metro"
-}
-variable "pf_cs_interface_autoneg" {
-  type    = bool
-  default = false
-}
-variable "pf_cs_interface_speed" {
-  type    = string
-  default = "1Gbps"
-}
-variable "pf_cs_interface_nni" {
-  type    = bool
-  default = false
 }

@@ -86,6 +86,7 @@ resource "google_compute_router" "router_1" {
   name    = "${var.tag_name}-${random_pet.name.id}"
   network = google_compute_network.vpc_1.id
   bgp {
+    # You must select or create a Cloud Router with its Google ASN set to 16550. This is a Google requirement for all Partner Interconnects.
     asn               = 16550
     advertise_mode    = "CUSTOM"
     advertised_groups = ["ALL_SUBNETS"]
