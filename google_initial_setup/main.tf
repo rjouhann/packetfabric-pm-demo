@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.29.0"
+      version = "4.30.0"
     }
   }
 }
@@ -82,6 +82,7 @@ output "public_ip_vm_1" {
   value       = data.google_compute_instance.vm_1.network_interface.0.access_config.0.nat_ip
 }
 
+# From the Google side: Create a Google Cloud Router with ASN 16550.
 resource "google_compute_router" "router_1" {
   name    = "${var.tag_name}-${random_pet.name.id}"
   network = google_compute_network.vpc_1.id
@@ -93,17 +94,43 @@ resource "google_compute_router" "router_1" {
   }
 }
 
+# From the Google side: Create a VLAN attachment.
 resource "google_compute_interconnect_attachment" "interconnect_1" {
   name          = "${var.tag_name}-${random_pet.name.id}"
   region        = var.gcp_region1
   description   = "Interconnect to PacketFabric Network"
   type          = "PARTNER"
-  admin_enabled = false
+  admin_enabled = true # From the Google side: Accept (automatically) the connection.
   router        = google_compute_router.router_1.id
 }
 
 output "service_key1" {
-  # The trailing /1 and /2 indicate which interconnect path your PacketFabric circuit should follow. The primary VLAN attachment ends in /1 and the redundant attachment ends in /2
-  value     = replace(google_compute_interconnect_attachment.interconnect_1.pairing_key, "/any", "/1")
+  value     = google_compute_interconnect_attachment.interconnect_1.pairing_key
   sensitive = true
 }
+output "vlan_attachement_name" {
+  value     = "${var.tag_name}-${random_pet.name.id}"
+}
+
+
+# From the PacketFabric side: Create a Cloud Router connection.
+# => ADD PacketFabric Cloud Router and Cloud Router Connection Creation here x2 (for both Primary and Secondary GCP Connections?)
+
+##########################################################################################
+################## Comment below, uncomment after Provider status: Provisioned
+##########################################################################################
+
+# From both sides: Configure BGP.
+
+# Expose bgpPeers from google_compute_router #11458
+# https://github.com/hashicorp/terraform-provider-google/issues/11458
+# Workaround: use https://github.com/terraform-google-modules/terraform-google-gcloud
+
+# data "google_compute_router" "router_1" {
+#   name    = "${var.tag_name}-${random_pet.name.id}"
+#   network = google_compute_network.vpc_1.id
+# }
+
+# output "router_1" {
+#   value     = data.google_compute_router.router_1
+# }

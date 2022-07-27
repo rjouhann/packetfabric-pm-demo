@@ -33,3 +33,5 @@ variable "subnet_cidr1" {
 variable "public_key" {
   sensitive = true
 }
+
+# Use SEA3 for the PF pop
