@@ -1,20 +1,25 @@
+# Install Docker
+* Install [Docker](https://docs.docker.com/get-docker/)
+* Or [Podman](https://podman.io/)
+
 # Build
 
 ```sh
 git clone git@github.com:PacketFabric/terraform-provider-packetfabric.git
+cd terraform-provider-packetfabric
 git checkout <your-branch>
+cd -
 docker build -t terraform-runner .
 ```
 
 # Run
 ```sh
 cd <your-terraform-directory>
-docker run --rm -it -v $(pwd):/working -v ~/Documents/secret.tfvars:/working/secret.tfvars --entrypoint=sh terraform-runner
+docker run --rm -it -v $(pwd):/working -v ~/Documents/secret.tfvars:/working/secret.tfvars --entrypoint=zsh terraform-runner
 ```
 
-Load alias:
+See available alias:
 ```sh
-source ~/alias
 alias
 ```
 
