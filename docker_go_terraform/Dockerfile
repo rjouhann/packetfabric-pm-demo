@@ -16,6 +16,6 @@ RUN echo 'alias td="terraform destroy -var-file=secret.tfvars"' >> ~/.zshrc
 RUN echo 'alias taa="terraform apply -auto-approve -var-file=secret.tfvars"' >> ~/.zshrc
 RUN echo 'alias tdd="terraform destroy -auto-approve -var-file=secret.tfvars"' >> ~/.zshrc
 RUN echo 'alias ti="terraform init"' >> ~/.zshrc
-RUN echo 'alias cleanup="rm -fr */*state* */.*lock* */.terraform' >> ~/.zshrc
+RUN echo 'alias cleanup="rm -fr *state* .*lock* .terraform"' >> ~/.zshrc
 
 CMD [ "zsh" ]
