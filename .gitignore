@@ -19,6 +19,9 @@ terraform.tfstate.backup
 *.test
 .DS_Store
 test
+test1
+test2
+test3
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
