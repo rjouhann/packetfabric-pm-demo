@@ -56,6 +56,7 @@ resource "google_compute_interconnect_attachment" "interconnect_1" {
   router        = google_compute_router.router_1.id
 }
 
+# type terraform output service_key1 to disoplay the value
 output "service_key1" {
   value     = google_compute_interconnect_attachment.interconnect_1.pairing_key
   sensitive = true

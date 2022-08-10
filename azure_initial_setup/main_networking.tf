@@ -84,6 +84,7 @@ resource "azurerm_express_route_circuit" "azure_express_route_1" {
 # az feature register --namespace Microsoft.Network --name AllowExpressRoutePorts
 # az provider register -n Microsoft.Network
 
+# type terraform output service_key1 to disoplay the value
 output "service_key1" {
   value     = azurerm_express_route_circuit.azure_express_route_1.service_key
   sensitive = true
