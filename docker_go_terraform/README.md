@@ -8,8 +8,14 @@
 git clone git@github.com:PacketFabric/terraform-provider-packetfabric.git
 cd terraform-provider-packetfabric
 git checkout <your-branch>
+```
+
+Copy the ``Dockerfile`` into the parent ``terraform-provider-packetfabric`` directory and run the docker build command.
+
+```sh
 cd -
 docker build -t terraform-runner .
+docker images
 ```
 
 # Run
