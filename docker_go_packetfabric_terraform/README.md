@@ -4,13 +4,15 @@
 
 # Build
 
+Make sure you are in ``docker_go_packetfabric_terraform`` folder, clone the ``terraform-provider-packetfabric`` repository and switch to the branch you want to use.
+
 ```sh
 git clone git@github.com:PacketFabric/terraform-provider-packetfabric.git
 cd terraform-provider-packetfabric
 git checkout <your-branch>
 ```
 
-Copy the ``Dockerfile`` into the parent ``terraform-provider-packetfabric`` directory and run the docker build command.
+Then go back to the ``docker_go_packetfabric_terraform`` and build the ``terraform-runner`` container.
 
 ```sh
 cd -
@@ -29,7 +31,7 @@ See available alias:
 alias
 ```
 
-# Use the local Terradform provider
+# Use the local PacketFabric Terradform provider
 ```sh
 terraform {
   required_providers {
