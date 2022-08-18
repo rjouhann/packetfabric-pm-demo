@@ -11,9 +11,9 @@ cp secret.tfvars.sample secret.tfvars
 2. Choose the folder between 
 
 - AWS initial setup (create VPC, subnets, ec2, etc...):<br/>``cd aws_initial_setup``
-- Azure initial setup (create VNet, subnets, VM, etc...) + Azure Cloud Router Connection:<br/>``cd azure_initial_setup``
-- GCP initial setup (create VPC, subnets, VM, etc...) + GCP Cloud Router Connection:<br/>``cd gcp_initial_setup``
-- AWS Peering Connections (native AWS peering):<br/>``cd aws_peering_connections``
+- Azure initial setup (create VNet, subnets, VM, etc...):<br/>``cd azure_initial_setup``
+- GCP initial setup (create VPC, subnets, VM, etc...):<br/>``cd gcp_initial_setup``
+- Oracle initial setup (create VNC, subnets, instance, etc...):<br/>``cd oracle_initial_setup``
 
 3. Create resources 
 ```sh
