@@ -8,13 +8,13 @@ terraform {
 }
 
 provider "oci" {
-  region               = var.oracle_region1
-  auth                 = "APIKey"
-  tenancy_ocid         = var.tenancy_ocid
-  user_ocid            = var.user_ocid
-  private_key          = var.private_key
+  region       = var.oracle_region1
+  auth         = "APIKey"
+  tenancy_ocid = var.tenancy_ocid
+  user_ocid    = var.user_ocid
+  private_key  = var.private_key
   #private_key_password = var.private_key_password
-  fingerprint          = var.fingerprint
+  fingerprint = var.fingerprint
 }
 
 # create random name to use to name objects
@@ -22,8 +22,9 @@ resource "random_pet" "name" {}
 
 resource "oci_identity_compartment" "new_compartment" {
   compartment_id = var.compartment_id
-  description = "${var.tag_name}-${random_pet.name.id}"
-  name        = "${var.tag_name}-${random_pet.name.id}"
+  description    = "${var.tag_name}-${random_pet.name.id}"
+  name           = "${var.tag_name}-${random_pet.name.id}"
+  enable_delete  = true
 }
 
 resource "oci_core_vcn" "subnet_cidr1" {
