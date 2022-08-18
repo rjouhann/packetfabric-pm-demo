@@ -20,19 +20,19 @@ provider "oci" {
 # create random name to use to name objects
 resource "random_pet" "name" {}
 
-resource "oci_identity_compartment" "new_compartment" {
-  compartment_id = var.compartment_id
-  description    = "${var.tag_name}-${random_pet.name.id}"
+resource "oci_identity_compartment" "compartment_1" {
+  compartment_id = var.parent_compartment_id
   name           = "${var.tag_name}-${random_pet.name.id}"
+  description    = "Compartment demo 1"
   enable_delete  = true
 }
 
-resource "oci_core_vcn" "subnet_cidr1" {
-  compartment_id = oci_identity_compartment.new_compartment.id
+resource "oci_core_vcn" "subnet_1" {
+  compartment_id = oci_identity_compartment.compartment_1.id
   display_name   = "${var.tag_name}-${random_pet.name.id}"
   cidr_block     = var.subnet_cidr1
 }
 
 output "oci_core_vcn" {
-  value       = oci_core_vcn.subnet_cidr1
+  value = oci_core_vcn.subnet_1
 }

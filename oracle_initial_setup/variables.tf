@@ -29,7 +29,7 @@ variable "fingerprint" {
   sensitive   = true
   description = "Oracle Public Key fingerprint"
 }
-variable "compartment_id" {
+variable "parent_compartment_id" {
   type        = string
   description = "Oracle Parent Compartment OCID"
 }

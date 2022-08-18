@@ -14,6 +14,7 @@ cp secret.tfvars.sample secret.tfvars
 - Azure initial setup (create VNet, subnets, VM, etc...):<br/>``cd azure_initial_setup``
 - GCP initial setup (create VPC, subnets, VM, etc...):<br/>``cd gcp_initial_setup``
 - Oracle initial setup (create VNC, subnets, instance, etc...):<br/>``cd oracle_initial_setup``
+- IBM initial setup (create VPC, subnets, instance, etc...):<br/>``cd ibm_initial_setup``
 
 3. Create resources 
 ```sh
