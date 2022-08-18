@@ -33,3 +33,6 @@ resource "oci_core_vcn" "subnet_cidr1" {
   cidr_block     = var.subnet_cidr1
 }
 
+output "oci_core_vcn" {
+  value       = oci_core_vcn.subnet_cidr1
+}
