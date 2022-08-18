@@ -41,6 +41,9 @@ resource "ibm_is_subnet" "subnet_1" {
   zone            = var.ibm_region1_zone1
   ipv4_cidr_block = var.subnet_cidr1
   #routing_table   = ibm_is_vpc_routing_table.example.routing_table
+  depends_on = [
+    ibm_is_vpc_address_prefix.vpc_prefix_1
+  ]
 }
 
 data "ibm_is_subnet" "subnet_1" {
