@@ -22,8 +22,8 @@ resource "ibm_resource_group" "resource_group_1" {
 }
 
 resource "ibm_is_vpc" "vpc_1" {
-  name           = "${var.tag_name}-${random_pet.name.id}"
-  resource_group = ibm_resource_group.resource_group_1.id
+  name                      = "${var.tag_name}-${random_pet.name.id}"
+  resource_group            = ibm_resource_group.resource_group_1.id
   address_prefix_management = "manual" # no default prefix will be created for each zone in this VPC.
 }
 

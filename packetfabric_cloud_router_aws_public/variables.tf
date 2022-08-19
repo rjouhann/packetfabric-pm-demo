@@ -30,18 +30,15 @@ variable "pf_api_key" {
 variable "pf_account_uuid" {
   type = string
 }
-variable "pf_aws_account_id" {
-  type = number
-}
 variable "pf_api_server" {
   type        = string
   default     = "https://api.packetfabric.com" # https://api.dev.packetfabric.net
   description = "PacketFabric API endpoint URL"
 }
-variable "pf_provider_source" {
-  type    = string
-  default = "packetfabric/packetfabric"
+variable "pf_aws_account_id" {
+  type = number
 }
+
 # PacketFabric Cloud-Router Parameter configurations
 variable "pf_cr_asn" {
   type     = number

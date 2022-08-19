@@ -31,7 +31,7 @@ resource "google_compute_subnetwork" "subnet_1" {
 }
 
 output "google_compute_network" {
-  value       = google_compute_network.vpc_1
+  value = google_compute_network.vpc_1
 }
 
 # From the Google side: Create a Google Cloud Router with ASN 16550.
@@ -62,7 +62,7 @@ output "service_key1" {
   sensitive = true
 }
 output "vlan_attachement_name" {
-  value     = "${var.tag_name}-${random_pet.name.id}"
+  value = "${var.tag_name}-${random_pet.name.id}"
 }
 
 
