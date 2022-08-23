@@ -16,6 +16,7 @@ Then go back to the ``docker_go_packetfabric_terraform`` and build the ``terrafo
 
 ```sh
 cd -
+docker rmi terraform-runner
 docker build -t terraform-runner .
 docker images
 ```
