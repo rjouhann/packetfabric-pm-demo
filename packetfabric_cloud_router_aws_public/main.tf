@@ -2,19 +2,11 @@ terraform {
   required_providers {
     packetfabric = {
       source  = "PacketFabric/packetfabric"
-      version = "0.1.0"
+      version = "0.2.0"
     }
     aws = {
       source  = "hashicorp/aws"
       version = "4.23.0"
-    }
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "3.14.0"
-    }
-    google = {
-      source  = "hashicorp/google"
-      version = "4.29.0"
     }
   }
 }
@@ -30,57 +22,42 @@ provider "aws" {
   region     = var.aws_region1
 }
 
-provider "azurerm" {
-  features {}
-  subscription_id = var.subscription_id
-  client_id       = var.client_id
-  client_secret   = var.client_secret
-  tenant_id       = var.tenant_id
-}
-
-provider "google" {
-  project     = var.gcp_project_id
-  credentials = file(var.gcp_credentials)
-  region      = var.gcp_region1
-  zone        = var.gcp_zone1
-}
-
 # Create random name to use to name objects
 resource "random_pet" "name" {}
 
 # From the PacketFabric side: Create a cloud router
-resource "cloud_router" "cr" {
+resource "packetfabric_cloud_router" "cr" {
   provider     = packetfabric
-  scope        = var.pf_cr_scope # Parameter deprecated
-  asn          = var.pf_cr_asn
   name         = "${var.tag_name}-${random_pet.name.id}"
   account_uuid = var.pf_account_uuid
+  asn          = var.pf_cr_asn
   capacity     = var.pf_cr_capacity
   regions      = var.pf_cr_regions
+  scope        = var.pf_cr_scope # Parameter deprecated
 }
 
-data "cloud_router" "current" {
+data "packetfabric_cloud_router" "current" {
   provider = packetfabric
   depends_on = [
     cloud_router.cr
   ]
 }
-output "cloud_router" {
+output "packetfabric_cloud_router" {
   value = data.cloud_router.current
 }
 
 # From the PacketFabric side: Create a cloud router connection to AWS
-resource "aws_cloud_router_connection" "crc_1" {
+resource "packetfabric_aws_cloud_router_connection" "crc_1" {
   provider       = packetfabric
-  circuit_id     = cloud_router.cr.id
+  description    = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
   account_uuid   = var.pf_account_uuid
   aws_account_id = var.pf_aws_account_id
-  maybe_nat      = true
-  description    = "${var.tag_name}-${random_pet.name.id}-${var.pf_crc_pop1}"
+  circuit_id     = cloud_router.cr.id
   pop            = var.pf_crc_pop1
   zone           = var.pf_crc_zone1
-  is_public      = true
   speed          = var.pf_crc_speed
+  maybe_nat      = true
+  is_public      = true
 }
 
 # Wait 60s for the connection to show up in AWS
@@ -117,7 +94,7 @@ resource "aws_dx_connection_confirmation" "confirmation_1" {
 ### see issue https://github.com/hashicorp/terraform-provider-aws/issues/25989
 
 ############# OPTION 1
-data "aws_cloud_router_connection" "current" {
+data "packetfabric_aws_cloud_router_connection" "current" {
   provider   = packetfabric
   circuit_id = cloud_router.cr.id
 
@@ -227,7 +204,7 @@ resource "aws_dx_public_virtual_interface" "direct_connect_vif_1" {
 #############
 
 # # From the PacketFabric side: Configure BGP
-resource "cloud_router_bgp_session" "crbs_1" {
+resource "packetfabric_cloud_router_bgp_session" "crbs_1" {
   provider       = packetfabric
   circuit_id     = cloud_router.cr.id
   connection_id  = aws_cloud_router_connection.crc_1.id
@@ -243,7 +220,7 @@ resource "cloud_router_bgp_session" "crbs_1" {
   # If this connection uses a public IP address, then this field is autofilled with the PacketFabric router prefix with /32
   pre_nat_sources = local.cc1_nat_public_ip
 }
-resource "cloud_router_bgp_prefixes" "crbp_1" {
+resource "packetfabric_cloud_router_bgp_prefixes" "crbp_1" {
   provider          = packetfabric
   bgp_settings_uuid = cloud_router_bgp_session.crbs_1.id
   prefixes {
