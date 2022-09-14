@@ -1,6 +1,6 @@
 ## General VARs
 variable "tag_name" {
-  default = "demo"
+  default = "demo-terraform"
 }
 
 ## PacketFabic VARs
