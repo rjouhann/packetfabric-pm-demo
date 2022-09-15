@@ -63,32 +63,32 @@ resource "azurerm_subnet" "subnet_gw" {
   virtual_network_name = azurerm_virtual_network.virtual_network_1.name
 }
 
-# # From the Microsoft side: Create an ExpressRoute circuit in the Azure Console.
-# resource "azurerm_express_route_circuit" "azure_express_route_1" {
-#   name                  = "${var.tag_name}-${random_pet.name.id}"
-#   resource_group_name   = azurerm_resource_group.resource_group_1.name
-#   location              = azurerm_resource_group.resource_group_1.location
-#   peering_location      = var.peering_location_1
-#   service_provider_name = var.service_provider_name
-#   bandwidth_in_mbps     = var.bandwidth_in_mbps
-#   sku {
-#     tier   = var.sku_tier
-#     family = var.sku_family
-#   }
-#   tags = {
-#     environment = "${var.tag_name}-${random_pet.name.id}"
-#   }
-#   ## Add a dependency on PF CRC
-# }
-# # Pre-req to enable AzureExpressRoute in the Azure Subscription
-# # az feature register --namespace Microsoft.Network --name AllowExpressRoutePorts
-# # az provider register -n Microsoft.Network
+# From the Microsoft side: Create an ExpressRoute circuit in the Azure Console.
+resource "azurerm_express_route_circuit" "azure_express_route_1" {
+  name                  = "${var.tag_name}-${random_pet.name.id}"
+  resource_group_name   = azurerm_resource_group.resource_group_1.name
+  location              = azurerm_resource_group.resource_group_1.location
+  peering_location      = var.peering_location_1
+  service_provider_name = var.service_provider_name
+  bandwidth_in_mbps     = var.bandwidth_in_mbps
+  sku {
+    tier   = var.sku_tier
+    family = var.sku_family
+  }
+  tags = {
+    environment = "${var.tag_name}-${random_pet.name.id}"
+  }
+  ## Add a dependency on PF CRC
+}
+# Pre-req to enable AzureExpressRoute in the Azure Subscription
+# az feature register --namespace Microsoft.Network --name AllowExpressRoutePorts
+# az provider register -n Microsoft.Network
 
-# # type terraform output service_key1 to disoplay the value
-# output "service_key1" {
-#   value     = azurerm_express_route_circuit.azure_express_route_1.service_key
-#   sensitive = true
-# }
+# type terraform output service_key1 to disoplay the value
+output "service_key1" {
+  value     = azurerm_express_route_circuit.azure_express_route_1.service_key
+  sensitive = true
+}
 
 # From the PacketFabric side: Create a Cloud Router connection.
 # => ADD PacketFabric Cloud Router and Cloud Router Connection Creation here x2 (for both Primary and Secondary Azure Connections)
