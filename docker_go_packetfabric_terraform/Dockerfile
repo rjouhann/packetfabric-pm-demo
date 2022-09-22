@@ -4,13 +4,19 @@ RUN apk add go
 RUN apk add make
 RUN apk add zsh
 RUN apk add graphviz
+RUN apk add curl
+RUN apk add python3
 
 RUN go install github.com/pcasteran/terraform-graph-beautifier@latest
 
 WORKDIR /working
 
-COPY . /working
+RUN curl -o /root/google-cloud-cli-403.0.0-linux-x86_64.tar.gz -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-403.0.0-linux-x86_64.tar.gz
+RUN tar -xf /root/google-cloud-cli-403.0.0-linux-x86_64.tar.gz -C /root
+RUN  /root/google-cloud-sdk/install.sh --quiet
+ENV PATH="${PATH}:/root/google-cloud-sdk/bin"
 
+COPY terraform-provider-packetfabric /working
 RUN cd /working/terraform-provider-packetfabric;make install
 RUN mv /root/.terraform.d/plugins/$(hostname) /root/.terraform.d/plugins/terraform.local
 

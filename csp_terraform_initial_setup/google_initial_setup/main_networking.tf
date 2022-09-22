@@ -78,13 +78,18 @@ output "vlan_attachement_name" {
 
 # Expose bgpPeers from google_compute_router #11458
 # https://github.com/hashicorp/terraform-provider-google/issues/11458
-# Workaround: use https://github.com/terraform-google-modules/terraform-google-gcloud
 
-# data "google_compute_router" "router_1" {
-#   name    = "${var.tag_name}-${random_pet.name.id}"
-#   network = google_compute_network.vpc_1.id
-# }
 
-# output "router_1" {
-#   value     = data.google_compute_router.router_1
-# }
+
+data "google_compute_router" "router_1" {
+  name    = "${var.tag_name}-${random_pet.name.id}"
+  network = google_compute_network.vpc_1.id
+}
+
+output "router_1" {
+  value     = data.google_compute_router.router_1
+}
+
+output "interconnect_1" {
+  value     = google_compute_interconnect_attachment.interconnect_1
+}
