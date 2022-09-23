@@ -56,7 +56,7 @@ resource "google_compute_interconnect_attachment" "interconnect_1" {
   router        = google_compute_router.router_1.id
 }
 
-# type terraform output service_key1 to disoplay the value
+# type terraform output service_key1 to display the value
 output "service_key1" {
   value     = google_compute_interconnect_attachment.interconnect_1.pairing_key
   sensitive = true
@@ -76,9 +76,9 @@ output "vlan_attachement_name" {
 
 # From both sides: Configure BGP.
 
-# Expose bgpPeers from google_compute_router #11458
+# Vote for
 # https://github.com/hashicorp/terraform-provider-google/issues/11458
-
+# https://github.com/hashicorp/terraform-provider-google/issues/12624
 
 
 data "google_compute_router" "router_1" {
