@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.14.0"
+      version = ">= 3.14.0"
     }
   }
 }
@@ -56,6 +56,7 @@ resource "azurerm_subnet" "subnet_1" {
 }
 
 # Subnet used for the azurerm_virtual_network_gateway only
+# https://learn.microsoft.com/en-us/azure/expressroute/expressroute-about-virtual-network-gateways#gwsub
 resource "azurerm_subnet" "subnet_gw" {
   name                 = "GatewaySubnet"
   address_prefixes     = ["${var.subnet_cidr1gw}"]
@@ -126,7 +127,8 @@ output "service_key1" {
 #     environment = "${var.tag_name}-${random_pet.name.id}"
 #   }
 # }
-# # This resource creation can take up to 50min - deletion up to 12min
+# # Please be aware that provisioning a Virtual Network Gateway takes a long time (between 30 minutes and 1 hour)
+# # Deletion can take up to 15 minutes
 # resource "azurerm_virtual_network_gateway" "vng_1" {
 #   name                = "${var.tag_name}-${random_pet.name.id}-vng1"
 #   location            = azurerm_resource_group.resource_group_1.location
