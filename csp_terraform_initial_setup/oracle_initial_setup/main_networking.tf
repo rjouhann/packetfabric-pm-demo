@@ -20,17 +20,17 @@ provider "oci" {
 # create random name to use to name objects
 resource "random_pet" "name" {}
 
-# create a compartment
-resource "oci_identity_compartment" "compartment_1" {
-  compartment_id = var.parent_compartment_id
-  name           = "${var.tag_name}-${random_pet.name.id}"
-  description    = "Compartment demo 1"
-  enable_delete  = true
-}
+# # create a compartment
+# resource "oci_identity_compartment" "compartment_1" {
+#   compartment_id = var.parent_compartment_id
+#   name           = "${var.tag_name}-${random_pet.name.id}"
+#   description    = "Compartment demo 1"
+#   enable_delete  = true
+# }
 
 # create a Virtual Network
 resource "oci_core_vcn" "subnet_1" {
-  compartment_id = oci_identity_compartment.compartment_1.id
+  compartment_id = var.parent_compartment_id
   display_name   = "${var.tag_name}-${random_pet.name.id}"
   cidr_block     = var.subnet_cidr1
 }
@@ -41,7 +41,7 @@ output "oci_core_vcn" {
 
 # Create a dynamic routing gateway
 resource "oci_core_drg" "dyn_routing_gw_1" {
-    compartment_id = oci_identity_compartment.compartment_1.id
+    compartment_id = var.parent_compartment_id
     display_name = "${var.tag_name}-${random_pet.name.id}"
 }
 
@@ -50,7 +50,7 @@ output "oci_core_drg" {
 }
 
 data "oci_core_fast_connect_provider_services" "packetfabric_provider" {
-    compartment_id = oci_identity_compartment.compartment_1.id
+    compartment_id = var.parent_compartment_id
     filter {
       name   = "provider_name"
       values = ["PacketFabric"]
@@ -63,7 +63,7 @@ output "oci_core_fast_connect_provider_services" {
 
 # Create a FastConnect connection 
 resource "oci_core_virtual_circuit" "fast_connect_1" {
-    compartment_id = oci_identity_compartment.compartment_1.id
+    compartment_id = var.parent_compartment_id
     display_name = "${var.tag_name}-${random_pet.name.id}"
     region = var.oracle_region1
     type = "PRIVATE"

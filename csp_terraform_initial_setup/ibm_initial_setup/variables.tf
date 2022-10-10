@@ -24,6 +24,11 @@ variable "iaas_classic_api_key" {
   sensitive   = true
   description = "IBM Classic API key"
 }
+variable "ibm_ressource_group" {
+  type        = string
+  sensitive   = true
+  description = "IBM Resource Group to use"
+}
 
 variable "ibm_region1" {
   type        = string
