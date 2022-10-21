@@ -7,6 +7,7 @@ RUN apk add graphviz
 RUN apk add curl
 RUN apk add python3
 RUN apk add jq
+RUN apk add bash
 
 RUN go install github.com/pcasteran/terraform-graph-beautifier@latest
 
