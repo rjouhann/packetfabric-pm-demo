@@ -22,14 +22,16 @@ COPY terraform-provider-packetfabric /working
 RUN cd /working/terraform-provider-packetfabric;make install
 RUN mv /root/.terraform.d/plugins/$(hostname) /root/.terraform.d/plugins/terraform.local
 
-RUN echo 'alias ta="terraform apply -var-file=secret.tfvars"' >> ~/.zshrc
-RUN echo 'alias td="terraform destroy -var-file=secret.tfvars"' >> ~/.zshrc
-RUN echo 'alias taa="terraform apply -auto-approve -var-file=secret.tfvars"' >> ~/.zshrc
-RUN echo 'alias tdd="terraform destroy -auto-approve -var-file=secret.tfvars"' >> ~/.zshrc
+RUN echo 'alias ta="terraform apply -compact-warnings -var-file=secret.tfvars"' >> ~/.zshrc
+RUN echo 'alias td="terraform destroy -compact-warnings -var-file=secret.tfvars"' >> ~/.zshrc
+RUN echo 'alias taa="terraform apply -compact-warnings -auto-approve -var-file=secret.tfvars"' >> ~/.zshrc
+RUN echo 'alias tdd="terraform destroy -compact-warnings -auto-approve -var-file=secret.tfvars"' >> ~/.zshrc
 RUN echo 'alias ti="terraform init"' >> ~/.zshrc
+RUN echo 'alias tim="terraform import -compact-warnings -var-file=secret.tfvars"' >> ~/.zshrc
 RUN echo 'alias tg="terraform graph | /root/go/bin/terraform-graph-beautifier --exclude=\"module.root.var.*\" --exclude=\"module.root.random\" --exclude=\"module.root.data.*\" --exclude=\"module.root.output.*\"  --output-type=graphviz | dot -Tsvg > graph.svg"' >> ~/.zshrc
 RUN echo 'alias cleanup="rm -f *state*;rm -f .*lock*;rm -fr .terraform;rm -fr .terraform.lock.hcl"' >> ~/.zshrc
 RUN echo 'alias debugon="export TF_LOG=\"DEBUG\""' >> ~/.zshrc
+RUN echo 'alias traceon="export TF_LOG=\"TRACE\""' >> ~/.zshrc
 RUN echo 'alias debugoff="export TF_LOG=\"\""' >> ~/.zshrc
 
 CMD [ "zsh" ]
