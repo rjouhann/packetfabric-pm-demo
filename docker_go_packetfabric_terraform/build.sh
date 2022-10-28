@@ -3,7 +3,7 @@
 cd terraform-provider-packetfabric
 git fetch
 git status
-git branch
+git branch | grep -v $(git rev-parse --abbrev-ref HEAD) | xargs git branch -D
 git pull
 echo
 cd -
