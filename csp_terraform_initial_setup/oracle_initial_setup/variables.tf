@@ -36,7 +36,7 @@ variable "parent_compartment_id" {
 
 variable "oracle_region1" {
   type        = string
-  default     = "us-sanjose-1"
+  default     = "us-ashburn-1"
   description = "Oracle Cloud region"
 }
 
