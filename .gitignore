@@ -4,7 +4,6 @@
 *.dll
 *.so
 *.dylib
-terraform-provider-packetfabric
 .vscode/
 .terraform.lock.hcl
 tfplugindocs
@@ -22,8 +21,6 @@ test
 test1
 test2
 test3
-terraform-provider-packetfabric
-terraform-provider-aws
 resources
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
