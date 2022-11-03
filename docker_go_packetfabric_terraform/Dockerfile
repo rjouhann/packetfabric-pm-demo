@@ -37,5 +37,9 @@ RUN echo 'alias cleanup="rm -f *state*;rm -f .*lock*;rm -fr .terraform;rm -fr .t
 RUN echo 'alias debugon="export TF_LOG=\"DEBUG\""' >> ~/.zshrc
 RUN echo 'alias traceon="export TF_LOG=\"TRACE\""' >> ~/.zshrc
 RUN echo 'alias debugoff="export TF_LOG=\"\""' >> ~/.zshrc
+RUN echo 'alias coverage="cd /working/internal/provider; go test -cover -v | grep -v SKIP | grep -v testutil.go | grep -v PASS | grep -v github.com"'  >> ~/.zshrc
+RUN echo 'alias accall="make testacc"' >> ~/.zshrc
+RUN echo 'alias acc="cd /working/internal/provider; echo \"TF_ACC=1 go test -v -run=\""' >> ~/.zshrc
+RUN echo 'alias fmt="gofmt -l -s -w ."'  >> ~/.zshrc
 
 CMD [ "zsh" ]
