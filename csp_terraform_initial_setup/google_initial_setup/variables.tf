@@ -10,7 +10,7 @@ variable "gcp_project_id" {
   description = "Google Cloud project ID"
 }
 
-variable "gcp_credentials" {
+variable "gcp_credentials_path" {
   type        = string
   description = "Google Cloud service account credentials"
 }

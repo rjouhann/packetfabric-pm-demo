@@ -10,7 +10,7 @@ terraform {
 # Make sure you enabled Compute Engine API
 provider "google" {
   project     = var.gcp_project_id
-  credentials = file(var.gcp_credentials)
+  credentials = file(var.gcp_credentials_path)
   region      = var.gcp_region1
   zone        = var.gcp_zone1
 }
