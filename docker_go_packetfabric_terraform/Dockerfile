@@ -18,6 +18,10 @@ RUN tar -xf /root/google-cloud-cli-403.0.0-linux-x86_64.tar.gz -C /root
 RUN  /root/google-cloud-sdk/install.sh --quiet
 ENV PATH="${PATH}:/root/google-cloud-sdk/bin"
 
+RUN wget https://github.com/hashicorp/terraform-plugin-docs/releases/download/v0.13.0/tfplugindocs_0.13.0_linux_amd64.zip -P /root
+RUN unzip /root/tfplugindocs_0.13.0_linux_amd64.zip -d /root/
+RUN cp /root/tfplugindocs /usr/bin
+
 COPY terraform-provider-packetfabric /working
 
 RUN cd /working/terraform-provider-packetfabric; make install
