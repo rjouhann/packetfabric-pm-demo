@@ -21,9 +21,12 @@ docker images
 ```
 
 # Run
+
+Edit `source_env_var.sh.sample` as needed and rename it to `source_env_var.sh`.
+
 ```sh
 cd <your-terraform-directory>
-docker run --rm -it -v $(pwd):/working -v ~/Documents/secret.tfvars:/working/secret.tfvars --entrypoint=zsh terraform-runner
+docker run --rm -it -v $(pwd):/working -v ~/Documents/source_env_var.sh:/working/source_env_var.sh --entrypoint=zsh terraform-runner
 ```
 
 See available alias:

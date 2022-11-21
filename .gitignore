@@ -36,4 +36,9 @@ terraform.tfstate.d/
 secret*.tfvars
 # GCP secret
 secret.json
+secret.sh
 *.json
+secret.env
+source_var.env
+env_vars_source.sh
+source_var.env
