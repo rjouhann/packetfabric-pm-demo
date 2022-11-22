@@ -22,7 +22,7 @@ docker images
 
 # Run
 
-Edit `source_env_var.sh.sample` as needed and rename it to `source_env_var.sh`.
+Download `source_env_var.sh.sample` from [terraform-provider-packetfabric](https://github.com/PacketFabric/terraform-provider-packetfabric/tree/main/examples). Edit `source_env_var.sh.sample` as needed and rename it to `source_env_var.sh`.
 
 ```sh
 cd <your-terraform-directory>
