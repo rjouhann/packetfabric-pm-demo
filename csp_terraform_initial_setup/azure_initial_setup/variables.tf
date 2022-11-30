@@ -69,23 +69,3 @@ variable "subnet_cidr1gw" {
 variable "public_key" {
   sensitive = true
 }
-variable "subscription_id" {
-  type        = string
-  description = "Azure Subscription ID"
-  sensitive   = true
-}
-variable "client_id" {
-  type        = string
-  description = "Azure Client ID"
-  sensitive   = true
-}
-variable "client_secret" {
-  type        = string
-  description = "Azure Client Secret ID"
-  sensitive   = true
-}
-variable "tenant_id" {
-  type        = string
-  description = "Azure Tenant ID"
-  sensitive   = true
-}

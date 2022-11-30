@@ -15,11 +15,6 @@ variable "pf_account_uuid" {
   default   = "secret"
   sensitive = true
 }
-variable "pf_api_server" {
-  type        = string
-  default     = "https://api.packetfabric.com"
-  description = "PacketFabric API endpoint URL"
-}
 
 variable "pf_cr_asn" {
   type     = number

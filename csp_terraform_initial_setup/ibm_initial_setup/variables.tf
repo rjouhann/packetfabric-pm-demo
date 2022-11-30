@@ -4,26 +4,6 @@ variable "tag_name" {
 }
 
 ## IBM VARs
-variable "ibm_account_id" {
-  type        = string
-  sensitive   = true
-  description = "IBM Account ID"
-}
-variable "ibmcloud_api_key" {
-  type        = string
-  sensitive   = true
-  description = "IBM API key"
-}
-variable "iaas_classic_username" {
-  type        = string
-  sensitive   = true
-  description = "IBM Classic Username"
-}
-variable "iaas_classic_api_key" {
-  type        = string
-  sensitive   = true
-  description = "IBM Classic API key"
-}
 variable "ibm_ressource_group" {
   type        = string
   sensitive   = true

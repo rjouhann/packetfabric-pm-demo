@@ -63,16 +63,6 @@ variable "ec2_ami2" {
 variable "ec2_instance_type" {
   default = "t2.micro" # Free tier
 }
-variable "aws_access_key" {
-  type        = string
-  description = "AWS access key"
-  sensitive   = true
-}
-variable "aws_secret_key" {
-  type        = string
-  description = "AWS secret key"
-  sensitive   = true
-}
 variable "public_key" {
   sensitive = true
 }
