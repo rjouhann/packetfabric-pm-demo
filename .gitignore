@@ -41,4 +41,4 @@ secret.sh
 secret.env
 source_var.env
 env_vars_source.sh
-source_var.env
+source_env_var.sh
